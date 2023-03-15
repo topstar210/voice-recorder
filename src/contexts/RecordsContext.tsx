@@ -205,20 +205,20 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 		let uniqBroswer = localStorage.getItem('uniqBroswer')??randomStr;
 		_axios.get("/file/get/"+uniqBroswer).then((res) => {
 			if(!res.data) return;
-			const records = res.data?.map((file:any, i:Number) => {
+			const records = res.data?.map((file:any, i:number) => {
 				const fileNameStr = file.split("___");
 				const fileName = fileNameStr[1];
 				const filePath = process.env.REACT_APP_FILEURL;
 				const fullFilePath = filePath + uniqBroswer + "/" + file;
 				return {
-					id: i,
+					id: i + 1,
 					name: fileName,
 					file: fullFilePath,
 					uploadedName: file
 				}
 			});
 			setRecords(records);
-			setLastId(res.data?.length - 1);
+			setLastId(res.data?.length);
 		});
 	}
 	
