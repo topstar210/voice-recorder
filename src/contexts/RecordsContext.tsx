@@ -1,12 +1,21 @@
 // import { time } from "console";
+import axios from "axios";
 import { createContext, ReactNode, useEffect, useState } from "react";
 
 import slugify from 'slugify';
+
+const _axios = axios.create({
+	baseURL: process.env.REACT_APP_SERVERURL,
+	headers: {
+		"Access-Control-Allow-Origin": "*",
+	},
+});
 
 type Record = {
 	id: number;
 	name: string;
 	file: any;
+	uploadedName?: string;
 }
 
 interface RecordsContextData {
@@ -55,7 +64,8 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 	const [currentRecord, setCurrentRecord] = useState<Record>({
 		id: -1,
 		name: '',
-		file: null
+		file: null,
+		uploadedName: ''
 	});
 	const [lastId, setLastId] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(false);
@@ -66,26 +76,26 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 	const seconds = timer % 60;
 
 	function startRecording() {
-		if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+		if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 			navigator.mediaDevices.getUserMedia({
 				audio: true
 			})
-			.then(stream => {
-				setIsRecording(true);
+				.then(stream => {
+					setIsRecording(true);
 
-				recorder = new MediaRecorder(stream);
+					recorder = new MediaRecorder(stream);
 
-				recorder.start();
+					recorder.start();
 
-				recorder.ondataavailable = e => {
-					recordingChunks.push(e.data);
-				}
-			})
-			.catch(error => {
-				console.error(error);
+					recorder.ondataavailable = e => {
+						recordingChunks.push(e.data);
+					}
+				})
+				.catch(error => {
+					console.error(error);
 
-				setIsRecordingAuthorized(false);
-			});
+					setIsRecordingAuthorized(false);
+				});
 		}
 	}
 
@@ -93,7 +103,7 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 		recorder.pause();
 		recorder.onpause = () => {
 			clearTimeout(timerTimeout);
-			setIsPause( !isPause );
+			setIsPause(!isPause);
 		}
 	}
 
@@ -101,7 +111,7 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 		recorder.resume();
 		recorder.onresume = () => {
 			setTimer(timer + 1);
-			setIsPause( !isPause );
+			setIsPause(!isPause);
 		}
 	}
 
@@ -110,12 +120,12 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 			const recordBlob = new Blob(recordingChunks, {
 				type: 'audio/ogg; codecs=opus'
 			});
-	
+
 			setCurrentRecord({
 				...currentRecord,
 				file: window.URL.createObjectURL(recordBlob)
 			});
-	
+
 			recordingChunks = [];
 		}
 
@@ -127,14 +137,17 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 		clearTimeout(timerTimeout);
 	}
 
-	function deleteRecord(toDeleteId: number) {		
-		const filteredRecords = records.filter(({ id }) => id !== toDeleteId );
+	function deleteRecord(toDeleteId: number) {
+		const filteredRecords = records.filter(({ id }) => id !== toDeleteId);
 
 		setRecords(filteredRecords);
+
+		deleteRecordFromBN(toDeleteId);
 	}
 
 	function deleteAllRecords() {
 		setRecords([]);
+		deleteRecordFromBN('all');
 	}
 
 	function cancelSaveRecord() {
@@ -154,7 +167,8 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 	}
 
 	function saveRecord() {
-		setRecords([...records, {...currentRecord, id: lastId + 1}]);
+		saveToBackend();
+		setRecords([...records, { ...currentRecord, id: lastId + 1 }]);
 		setCurrentRecord({
 			id: -1,
 			name: '',
@@ -162,6 +176,60 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 		});
 		setLastId(lastId + 1);
 		setIsRecordingFinished(false);
+	}
+
+	// private function
+	async function saveToBackend() {
+		let uniqBroswer = localStorage.getItem('uniqBroswer')??"";
+		const file = await fetch(currentRecord.file)
+			.then(r => r.blob())
+			.then(blobFile => new File([blobFile], currentRecord.name, { type: blobFile.type }))
+		const config = {
+			headers: {
+				'content-type': 'multipart/form-data',
+			},
+		};
+		const formData = new FormData();
+		formData.append('audio', file);
+		formData.append('uniqBroswer', uniqBroswer);
+		
+		_axios.post("/file/save",formData, config).then((res) => {
+			console.log(res);
+		});
+	}
+
+	// load records files
+	async function loadFromBackend() {
+		const randomStr = Math.random().toString(36).slice(2, 7);
+		if (!localStorage.getItem('uniqBroswer')) localStorage.setItem('uniqBroswer', randomStr);
+		let uniqBroswer = localStorage.getItem('uniqBroswer')??randomStr;
+		_axios.get("/file/get/"+uniqBroswer).then((res) => {
+			if(!res.data) return;
+			const records = res.data?.map((file:any, i:Number) => {
+				const fileNameStr = file.split("___");
+				const fileName = fileNameStr[1];
+				const filePath = process.env.REACT_APP_FILEURL;
+				const fullFilePath = filePath + uniqBroswer + "/" + file;
+				return {
+					id: i,
+					name: fileName,
+					file: fullFilePath,
+					uploadedName: file
+				}
+			});
+			setRecords(records);
+			setLastId(res.data?.length - 1);
+		});
+	}
+	
+	function deleteRecordFromBN(toDeleteId:any) {
+		let uniqBroswer = localStorage.getItem('uniqBroswer')??"";
+		if(toDeleteId === 'all'){
+			_axios.delete("/file/delete/"+uniqBroswer);
+		} else {
+			const deleteRecord = records.filter(({ id }) => id === toDeleteId);
+			_axios.delete("/file/delete/"+uniqBroswer+"/"+deleteRecord[0]?.uploadedName);	
+		}
 	}
 
 	function playTheRecord(src: string) {
@@ -175,12 +243,16 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 	}
 
 	useEffect(() => {
-		if(isRecording) {
+		if (isRecording) {
 			timerTimeout = setTimeout(() => {
 				setTimer(timer + 1);
 			}, 1000);
 		}
 	}, [isRecording, timer]);
+
+	useEffect(()=>{
+		loadFromBackend();
+	},[])
 
 	return (
 		<RecordsContext.Provider
@@ -210,7 +282,7 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 				stopTheRecord,
 			}}
 		>
-			{ children }
+			{children}
 		</RecordsContext.Provider>
 	);
 }

@@ -4,7 +4,7 @@ import { RecordsContext } from '../contexts/RecordsContext';
 import { PlayRecordModal } from './PlayRecordModal';
 
 import iconPlay from '../assets/images/icons/play.svg';
-import iconSave from '../assets/images/icons/save.svg';
+import iconDownload from '../assets/images/icons/download.svg';
 import iconX from '../assets/images/icons/close.svg';
 
 interface RecordsListItemProps {
@@ -44,9 +44,10 @@ export function RecordsListItem({ id, name, file }: RecordsListItemProps) {
 				<a
 					href={file}
 					download={name}
+					target="_blank"
 					className="mr-3 transition-transform duration-300 transform hover:scale-125 dark:invert"
 				>
-					<img src={ iconSave } alt="Save"/>
+					<img src={ iconDownload } width={18} alt="Save"/>
 				</a>
 
 				<button 

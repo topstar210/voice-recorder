@@ -32,7 +32,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-dotenv.config();
+dotenv.config({path:'/../.env'});
 
 app.use("/api/", indexRouter);
 app.use("/api/file", fileRouter)
