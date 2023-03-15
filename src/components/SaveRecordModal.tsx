@@ -15,7 +15,7 @@ export function SaveRecordModal() {
 		<div className="fixed left-0 top-0 bottom-0 right-0 flex justify-center items-center z-10 bg-text bg-opacity-60 dark:bg-black dark:bg-opacity-50">
 			<div className="w-full max-w-md py-10 px-5 bg-white dark:bg-text rounded-custom shadow-lg lg:mx-0 mx-4">
 				<header>
-					<h3 className="uppercase text-text dark:text-gray-50 mb-9 text-2xl font-bold tracking-wider font-serif text-left">Salvar</h3>
+					<h3 className="uppercase text-text dark:text-gray-50 mb-9 text-2xl font-bold tracking-wider font-serif text-left">Saving</h3>
 				</header>
 
 				<main className="mb-11">
@@ -23,7 +23,7 @@ export function SaveRecordModal() {
 						<input 
 							className="bg-bg w-10/12 shadow-inner rounded-custom rounded-r-none py-3 pl-6 placeholder-gray-300 text-text focus:placeholder-transparent"
 							type="text"
-							placeholder="Nome da gravação"
+							placeholder="Recording name"
 							onInput={handleSetCurrentRecordName}
 						/>
 

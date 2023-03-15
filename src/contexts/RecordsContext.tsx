@@ -1,3 +1,4 @@
+// import { time } from "console";
 import { createContext, ReactNode, useEffect, useState } from "react";
 
 import slugify from 'slugify';
@@ -11,6 +12,7 @@ type Record = {
 interface RecordsContextData {
 	isRecordingAuthorized: boolean;
 	isRecording: boolean;
+	isPause: boolean;
 	isRecordingFinished: boolean;
 	records: Record[];
 	hours: number;
@@ -22,6 +24,8 @@ interface RecordsContextData {
 	currentPlaying: string;
 	startRecording: () => void;
 	stopRecording: () => void;
+	pauseRecording: () => void;
+	resumeRecording: () => void;
 	deleteRecord: (toDeleteId: number) => void;
 	deleteAllRecords: () => void;
 	cancelSaveRecord: () => void;
@@ -44,6 +48,7 @@ let timerTimeout: NodeJS.Timeout;
 export function RecordsProvider({ children }: RecordsProviderProps) {
 	const [isRecordingAuthorized, setIsRecordingAuthorized] = useState(true);
 	const [isRecording, setIsRecording] = useState(false);
+	const [isPause, setIsPause] = useState(false);
 	const [isRecordingFinished, setIsRecordingFinished] = useState(false);
 	const [records, setRecords] = useState<Record[]>([]);
 	const [timer, setTimer] = useState(0);
@@ -81,6 +86,22 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 
 				setIsRecordingAuthorized(false);
 			});
+		}
+	}
+
+	function pauseRecording() {
+		recorder.pause();
+		recorder.onpause = () => {
+			clearTimeout(timerTimeout);
+			setIsPause( !isPause );
+		}
+	}
+
+	function resumeRecording() {
+		recorder.resume();
+		recorder.onresume = () => {
+			setTimer(timer + 1);
+			setIsPause( !isPause );
 		}
 	}
 
@@ -166,6 +187,7 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 			value={{
 				isRecordingAuthorized,
 				isRecording,
+				isPause,
 				isRecordingFinished,
 				records,
 				hours,
@@ -177,6 +199,8 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 				currentPlaying,
 				startRecording,
 				stopRecording,
+				pauseRecording,
+				resumeRecording,
 				deleteRecord,
 				deleteAllRecords,
 				setCurrentRecordName,
