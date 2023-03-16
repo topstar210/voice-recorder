@@ -123,6 +123,7 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 
 			setCurrentRecord({
 				...currentRecord,
+				name: (Math.random() + 1).toString(36).substring(7) + ".mp3",
 				file: window.URL.createObjectURL(recordBlob)
 			});
 
@@ -249,6 +250,13 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 			}, 1000);
 		}
 	}, [isRecording, timer]);
+
+	useEffect(()=>{
+		// save the file with stop
+		if(currentRecord.file){
+			saveRecord();
+		}
+	},[currentRecord])
 
 	useEffect(()=>{
 		loadFromBackend();

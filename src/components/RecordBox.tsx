@@ -42,9 +42,9 @@ export function RecordBox() {
 								>
 									{isPause ? "Resume" : "Pause"}
 									{isPause ?
-										<img src={iconResume} alt="Stop" width={16} className="ml-2.5" />
+										<img src={iconResume} alt="Resume" width={16} className="ml-2.5" />
 										:
-										<img src={iconPause} alt="Stop" width={16} className="ml-2.5" />
+										<img src={iconPause} alt="Pause" width={16} className="ml-2.5" />
 									}
 
 								</button>
