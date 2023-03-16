@@ -15,18 +15,16 @@ export function PlayRecordModal() {
 					<button
 						type="button"
 						className="absolute right-4 top-4 transition-opacity duration-300 hover:opacity-75"
-						onClick={ stopTheRecord }
+						onClick={stopTheRecord}
 					>
-						<img src={ iconX } alt="Close"/>
+						<img src={iconX} alt="Close" />
 					</button>
 				</header>
 
 				<main className="flex justify-center items-center">
-					<audio
-						controls
-						autoPlay
-						src={ currentPlaying }
-					></audio>
+					<audio controls autoPlay >
+						<source src={currentPlaying} type="audio/mpeg" />
+					</audio>
 				</main>
 			</div>
 		</div>
