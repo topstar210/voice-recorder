@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { RecordsContext } from "../contexts/RecordsContext";
+import { RecordsContext } from "@/contexts/RecordsContext";
 
 export function RecordTimer() {
 	const { hours, minutes, seconds } = useContext(RecordsContext);

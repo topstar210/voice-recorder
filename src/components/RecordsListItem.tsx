@@ -1,11 +1,11 @@
 import { useContext } from 'react';
-import { RecordsContext } from '../contexts/RecordsContext';
+import { RecordsContext } from '@/contexts/RecordsContext';
 
 import { PlayRecordModal } from './PlayRecordModal';
 
-import iconPlay from '../assets/images/icons/play.svg';
-import iconDownload from '../assets/images/icons/download.svg';
-import iconX from '../assets/images/icons/close.svg';
+import iconPlay from '@/assets/images/icons/play.svg';
+import iconDownload from '@/assets/images/icons/download.svg';
+import iconX from '@/assets/images/icons/close.svg';
 
 interface RecordsListItemProps {
 	id: number;

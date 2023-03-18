@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { RecordsContext } from "../contexts/RecordsContext";
+import { RecordsContext } from "@/contexts/RecordsContext";
 import { RecordsListItem } from "./RecordsListItem";
 
-import iconBlock from '../assets/images/icons/block.svg';
+import iconBlock from '@/assets/images/icons/block.svg';
 
 export function RecordsList() {
 	const { records, deleteAllRecords } = useContext(RecordsContext);

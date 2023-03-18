@@ -1,14 +1,14 @@
 import { useContext } from 'react';
 
-import { RecordsContext } from '../contexts/RecordsContext';
+import { RecordsContext } from '@/contexts/RecordsContext';
 
 import { RecordTimer } from './RecordTimer';
 import { SaveRecordModal } from './SaveRecordModal';
 
-import iconPlay from '../assets/images/icons/play-circle.svg';
-import iconStop from '../assets/images/icons/stop.svg';
-import iconPause from '../assets/images/icons/pause-24.png';
-import iconResume from '../assets/images/icons/play-32.png';
+import iconPlay from '@/assets/images/icons/play-circle.svg';
+import iconStop from '@/assets/images/icons/stop.svg';
+import iconPause from '@/assets/images/icons/pause-24.png';
+import iconResume from '@/assets/images/icons/play-32.png';
 
 export function RecordBox() {
 	const {

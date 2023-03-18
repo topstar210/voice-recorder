@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { RecordsContext } from '../contexts/RecordsContext';
+import { RecordsContext } from '@/contexts/RecordsContext';
 
-import iconX from '../assets/images/icons/close-white.svg';
-import iconCheck from '../assets/images/icons/check.svg';
+import iconX from '@/assets/images/icons/close-white.svg';
+import iconCheck from '@/assets/images/icons/check.svg';
 
 export function SaveRecordModal() {
 	const { currentRecord, setCurrentRecordName, saveRecord, cancelSaveRecord } = useContext(RecordsContext);

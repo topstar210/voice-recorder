@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import { RecordsProvider } from './contexts/RecordsContext';
-
-import { RecordBox } from './components/RecordBox';
-import { RecordsList } from './components/RecordsList';
 
 import Cookies from 'js-cookie';
+
+import Record from '@/pages/Record';
 
 import iconMoon from './assets/images/icons/dark-mode.svg';
 import iconSun from './assets/images/icons/light-mode.svg';
@@ -63,15 +61,8 @@ function App() {
         <img src={ isDarkModeEnabled ? iconSun : iconMoon } alt="Moon" className="w-6 h-6 dark:invert" />
       </button>
 
-      <RecordsProvider>
-        <section className="lg:col-span-5 lg:mb-0 mb-8">
-          <RecordBox />
-        </section>
+      <Record />
 
-        <section className="lg:col-span-6">
-          <RecordsList />
-        </section>
-      </RecordsProvider>
     </main>
   );
 }

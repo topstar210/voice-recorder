@@ -1,7 +1,7 @@
 import { useContext } from 'react';
-import { RecordsContext } from '../contexts/RecordsContext';
+import { RecordsContext } from '@/contexts/RecordsContext';
 
-import iconX from '../assets/images/icons/close-red.svg';
+import iconX from '@/assets/images/icons/close-red.svg';
 
 export function PlayRecordModal() {
 	const { currentPlaying, stopTheRecord } = useContext(RecordsContext);
