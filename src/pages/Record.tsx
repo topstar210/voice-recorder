@@ -5,7 +5,7 @@ import { RecordsList } from '@/components/RecordsList';
 
 function Record() {
   return (
-    <>
+    <div className="container mx-auto lg:grid lg:grid-cols-11 lg:gap-x-32 lg:px-0 px-4 lg:mt-20">
       <RecordsProvider>
         <section className="lg:col-span-5 lg:mb-0 mb-8">
           <RecordBox />
@@ -15,7 +15,7 @@ function Record() {
           <RecordsList />
         </section>
       </RecordsProvider>
-    </>
+    </div>
   );
 }
 

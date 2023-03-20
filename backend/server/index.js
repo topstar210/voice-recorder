@@ -4,9 +4,10 @@ import logger from "morgan";
 import cors from "cors";
 import fileUpload from 'express-fileupload';
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
-// // mongo connection
-// import "../config/mongo.js";
+// mongo connection
+import "../config/mongo.js";
 
 // routes
 import indexRouter from "../routes/index.js";
@@ -20,6 +21,7 @@ const corsObj = {
   credentials: true
 }
 app.use(cors(corsObj));
+app.use(cookieParser());
 
 /** Get port from environment and store in Express. */
 const port = process.env.PORT || "2087";
@@ -32,10 +34,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
-dotenv.config({path:'/../.env'});
+dotenv.config();
 
-app.use("/api/", indexRouter);
-app.use("/api/file", fileRouter)
+app.use("/", indexRouter);
+app.use("/file", fileRouter)
 
 /** catch 404 and forward to error handler */
 app.use('*', (req, res) => {

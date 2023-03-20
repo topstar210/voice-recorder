@@ -15,7 +15,8 @@ module.exports = {
         },
         'text': '#424242',
         'button-green': '#2DE38C',
-        'button-red': '#EA4848'
+        'button-red': '#EA4848',
+        'main': '#2C6CA8',
       },
       borderRadius: {
         'custom': '10px'
