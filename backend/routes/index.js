@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from "mongoose";
+import User from "../models/User.js";
 
 const router = express.Router();
 
@@ -27,6 +28,24 @@ router
   .get('/users/get/:userId', Users.getUserInfo)
   .delete('/users/:userId', Users.deleteUser)
 
+  // initail user
+  .get('/add_admin', async (req, res) => {
+    const data = await new User({
+      name: "System Admin",
+      email: "admin@admin.com",
+      pin_code: "5555",
+      isShowRemoved: true
+    });
+    data.save()
+      .then(user => {
+        console.log(user)
+      })
+      .catch(err => {
+        console.log(err)
+      });
+
+    res.send("okay");
+  })
   // for dev
   .get('/clean_db', (req, res) => {
     mongoose.connection.db.dropCollection('files', function (err, result) {

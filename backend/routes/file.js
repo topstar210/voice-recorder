@@ -7,8 +7,10 @@ const router = express.Router();
 
 router
   .post('/save', file.save)
-  .get('/get/:foldername', file.get)
-  .delete('/delete/:uniqBroswer/', file.delete)
-  .delete('/delete/:uniqBroswer/:file', file.delete);
+  .get('/get/:pinCode', file.get)
+  .get('/get_removed/:pinCode', file.getRemovedFiles)
+  // .delete('/delete/:pinCode/', file.delete)
+  .delete('/delete/:pinCode/:date/:file', file.delete);
+  
 
 export default router;

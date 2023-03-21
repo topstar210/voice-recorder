@@ -8,7 +8,7 @@ const fileSchema = new mongoose.Schema(
       default: () => uuidv4().replace(/\-/g, ""),
     },
     name: String,
-    uniqBroswer: String,
+    pinCode: String,
   },
   {
     timestamps: true,

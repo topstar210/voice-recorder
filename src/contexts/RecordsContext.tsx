@@ -1,6 +1,7 @@
 // import { time } from "console";
 import axios from "axios";
 import { createContext, ReactNode, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 import slugify from 'slugify';
 
@@ -31,12 +32,15 @@ interface RecordsContextData {
 	lastId: number;
 	isPlaying: boolean;
 	currentPlaying: string;
+	isShowRemoved:boolean;
 	startRecording: () => void;
 	stopRecording: () => void;
 	pauseRecording: () => void;
 	resumeRecording: () => void;
 	deleteRecord: (toDeleteId: number) => void;
 	deleteAllRecords: () => void;
+	getRemovedFiles: () => void;
+	getCurrFiles: () => void;
 	cancelSaveRecord: () => void;
 	setCurrentRecordName: (name: string) => void;
 	saveRecord: () => void;
@@ -55,6 +59,7 @@ let recordingChunks: BlobPart[] = [];
 let timerTimeout: NodeJS.Timeout;
 
 export function RecordsProvider({ children }: RecordsProviderProps) {
+	const app = useSelector((state:any)=>state.sapp);
 	const [isRecordingAuthorized, setIsRecordingAuthorized] = useState(true);
 	const [isRecording, setIsRecording] = useState(false);
 	const [isPause, setIsPause] = useState(false);
@@ -70,6 +75,8 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 	const [lastId, setLastId] = useState(0);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const [currentPlaying, setCurrentPlaying] = useState('');
+	const [pinCode, setPinCode] = useState("");
+	const [isShowRemoved, setIsShowRemoved] = useState(false);
 
 	const hours = Math.floor(timer / 3600);
 	const minutes = Math.floor(timer / 60);
@@ -181,7 +188,6 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 
 	// private function
 	async function saveToBackend() {
-		let uniqBroswer = localStorage.getItem('uniqBroswer')??"";
 		const file = await fetch(currentRecord.file)
 			.then(r => r.blob())
 			.then(blobFile => new File([blobFile], currentRecord.name, { type: blobFile.type }))
@@ -192,25 +198,22 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 		};
 		const formData = new FormData();
 		formData.append('audio', file);
-		formData.append('uniqBroswer', uniqBroswer);
+		formData.append('pinCode', pinCode);
 		
 		_axios.post("/file/save",formData, config).then((res) => {
-			console.log(res);
+			// console.log(res);
 		});
 	}
 
 	// load records files
-	async function loadFromBackend() {
-		const randomStr = Math.random().toString(36).slice(2, 7);
-		if (!localStorage.getItem('uniqBroswer')) localStorage.setItem('uniqBroswer', randomStr);
-		let uniqBroswer = localStorage.getItem('uniqBroswer')??randomStr;
-		_axios.get("/file/get/"+uniqBroswer).then((res) => {
+	async function getMyfiles() {
+		_axios.get("/file/get/"+pinCode).then((res) => {
 			if(!res.data) return;
 			const records = res.data?.map((file:any, i:number) => {
 				const fileNameStr = file.split("___");
 				const fileName = fileNameStr[1];
 				const filePath = process.env.REACT_APP_FILEURL;
-				const fullFilePath = filePath + uniqBroswer + "/" + file;
+				const fullFilePath = filePath + pinCode + "/" + file;
 				return {
 					id: i + 1,
 					name: fileName,
@@ -224,12 +227,11 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 	}
 	
 	function deleteRecordFromBN(toDeleteId:any) {
-		let uniqBroswer = localStorage.getItem('uniqBroswer')??"";
 		if(toDeleteId === 'all'){
-			_axios.delete("/file/delete/"+uniqBroswer);
+			_axios.delete("/file/delete/"+pinCode);
 		} else {
 			const deleteRecord = records.filter(({ id }) => id === toDeleteId);
-			_axios.delete("/file/delete/"+uniqBroswer+"/"+deleteRecord[0]?.uploadedName);	
+			_axios.delete("/file/delete/"+pinCode+"/"+deleteRecord[0]?.uploadedName);	
 		}
 	}
 
@@ -243,6 +245,33 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 		setCurrentPlaying('');
 	}
 
+	function getRemovedFiles() {
+		if (!pinCode) return;
+		_axios.get("/file/get_removed/"+pinCode).then((res) => {
+			let records = []; 
+			if(res.data) {
+				records = res.data?.map((file:any, i:number) => {
+					const fileNameStr = file.split("___");
+					const fileName = fileNameStr[1];
+					const filePath = process.env.REACT_APP_FILEURL;
+					const fullFilePath = filePath + pinCode + "/removed_files" + file;
+					return {
+						id: i + 1,
+						name: fileName,
+						file: fullFilePath,
+						uploadedName: file
+					}
+				});
+			}
+			setRecords(records);
+		});
+	}
+
+	function getCurrFiles() {
+		if (!pinCode) return;
+		getMyfiles();
+	}
+
 	useEffect(() => {
 		if (isRecording) {
 			timerTimeout = setTimeout(() => {
@@ -252,15 +281,20 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 	}, [isRecording, timer]);
 
 	useEffect(()=>{
-		// save the file with stop
 		if(currentRecord.file){
 			saveRecord();
 		}
 	},[currentRecord])
 
 	useEffect(()=>{
-		loadFromBackend();
-	},[])
+		setIsShowRemoved(app?.isShowRemoved?true:false);
+		setPinCode(app.pinCode);
+	},[app]);
+
+	useEffect(()=>{
+		if (!pinCode) return;
+		getMyfiles();
+	},[pinCode])
 
 	return (
 		<RecordsContext.Provider
@@ -277,12 +311,15 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 				lastId,
 				isPlaying,
 				currentPlaying,
+				isShowRemoved,
 				startRecording,
 				stopRecording,
 				pauseRecording,
 				resumeRecording,
 				deleteRecord,
 				deleteAllRecords,
+				getRemovedFiles,
+				getCurrFiles,
 				setCurrentRecordName,
 				saveRecord,
 				cancelSaveRecord,

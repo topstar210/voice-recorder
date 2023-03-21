@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 
 import axiosJWT from "@/provider/API";
 
@@ -48,11 +49,16 @@ const Login = () => {
     }
 
     const handleClickLogin = () => {
-        axiosJWT.auth.login(pins).then(() => {
-            navigate('/');
+        axiosJWT.auth.login(pins).then((res:any) => {
+            const jwtDecoded:any = jwt_decode(res.data?.accessToken);
+            if(jwtDecoded.role === "admin"){
+                window.location.href = "/admin";
+            } else window.location.href = "/";
             setIsConfirmBtn(false);
             setPins([-1, -1, -1, -1]);
             setPinLen(0);
+        }).catch(()=>{
+            alert("Pin code not found."); return;
         })
     }
 

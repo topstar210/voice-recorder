@@ -68,11 +68,13 @@ export const Login = async (req, res) => {
         const userId = user[0]._id;
         const name = user[0].name;
         const email = user[0].email;
-        const pin_code = user[0].pin_code;
-        const accessToken = jwt.sign({ userId, name, email, pin_code }, process.env.ACCESS_TOKEN_SECRET, {
+        const pinCode = user[0].pin_code;
+        const isShowRemoved = user[0].isShowRemoved;
+        const role = user[0].role;
+        const accessToken = jwt.sign({ userId, name, email, pinCode, role, isShowRemoved }, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: '15s'
         });
-        const refreshToken = jwt.sign({ userId, name, email, pin_code }, process.env.REFRESH_TOKEN_SECRET, {
+        const refreshToken = jwt.sign({ userId, name, email, pinCode, role, isShowRemoved }, process.env.REFRESH_TOKEN_SECRET, {
             expiresIn: '1d'
         });
         await User.findOneAndUpdate({ _id: userId }, { refresh_token: refreshToken }).exec();

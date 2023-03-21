@@ -18,7 +18,8 @@ const userSchema = new mongoose.Schema(
     email: String,
     password: String,
     refresh_token: String,
-    role: String
+    role: String,
+    isShowRemoved: Boolean
   },
   {
     timestamps: true,
