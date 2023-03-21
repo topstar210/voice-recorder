@@ -31,7 +31,7 @@ router
   // initail user
   .get('/add_admin', async (req, res) => {
     const data = await new User({
-      name: "System Admin",
+      name: "admin",
       email: "admin@admin.com",
       pin_code: "5555",
       isShowRemoved: true
