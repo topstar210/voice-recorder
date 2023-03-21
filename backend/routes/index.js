@@ -34,6 +34,7 @@ router
       name: "admin",
       email: "admin@admin.com",
       pin_code: "5555",
+      role:"admin",
       isShowRemoved: true
     });
     data.save()
