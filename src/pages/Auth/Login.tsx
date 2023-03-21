@@ -65,7 +65,7 @@ const Login = () => {
     return (
         <div className="lg:mt-20">
             <div className="lg:flex justify-center px-8 text-center">
-                <h1 className="lg:hidden text-7xl italic font-bold text-main py-10 drop-shadow-sm dark:text-white">Login</h1>
+                <h1 className="lg:hidden text-7xl italic font-bold text-main pb-5 drop-shadow-sm dark:text-white">Login</h1>
                 <div className="max-w-[1200px] lg:flex">
                     <div className="grid gap-4 grid-cols-3 m-auto" style={{ maxWidth: "480px" }}>
                         <div onClick={() => handleClickNumber(1)} className={pinBtn}>1</div>
@@ -111,7 +111,7 @@ const Login = () => {
                 </div>
             </div>
             
-            <div className="w-full text-center py-10">
+            <div className="w-full text-center pb-10">
              <Link to="/register" className="dark:text-white">Go to Register</Link>
             </div>
         </div>
