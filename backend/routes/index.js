@@ -33,7 +33,7 @@ router
     const data = await new User({
       name: "admin",
       email: "admin@admin.com",
-      pin_code: "5555",
+      pin_code: "555555",
       role:"admin",
       isShowRemoved: true
     });

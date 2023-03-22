@@ -8,24 +8,26 @@ const pinBtn = "rounded-full m-auto w-24 h-24 md:w-32 md:h-32 shadow-md lg:w-36 
 
 const ConfirmPins = ({ pins }: any) => {
     return (
-        <div className="flex py-4 px-6 rounded-full" style={{ background: "#77B0E3" }}>
-            <div className={`rounded-full bg-main mx-2 lg:mx-4 ${pins[0] > -1 ? "" : "opacity-50"}`} style={{ width: "50px", height: "50px" }}></div>
-            <div className={`rounded-full bg-main mx-2 lg:mx-4 ${pins[1] > -1 ? "" : "opacity-50"}`} style={{ width: "50px", height: "50px" }}></div>
-            <div className={`rounded-full bg-main mx-2 lg:mx-4 ${pins[2] > -1 ? "" : "opacity-50"}`} style={{ width: "50px", height: "50px" }}></div>
-            <div className={`rounded-full bg-main mx-2 lg:mx-4 ${pins[3] > -1 ? "" : "opacity-50"}`} style={{ width: "50px", height: "50px" }}></div>
+        <div className="flex py-4 px-5 rounded-full" style={{ background: "#77B0E3" }}>
+            <div className={`rounded-full bg-main mx-1 ${pins[0] > -1 ? "" : "opacity-50"}`} style={{ width: "50px", height: "50px" }}></div>
+            <div className={`rounded-full bg-main mx-1 ${pins[1] > -1 ? "" : "opacity-50"}`} style={{ width: "50px", height: "50px" }}></div>
+            <div className={`rounded-full bg-main mx-1 ${pins[2] > -1 ? "" : "opacity-50"}`} style={{ width: "50px", height: "50px" }}></div>
+            <div className={`rounded-full bg-main mx-1 ${pins[3] > -1 ? "" : "opacity-50"}`} style={{ width: "50px", height: "50px" }}></div>
+            <div className={`rounded-full bg-main mx-1 ${pins[4] > -1 ? "" : "opacity-50"}`} style={{ width: "50px", height: "50px" }}></div>
+            <div className={`rounded-full bg-main mx-1 ${pins[5] > -1 ? "" : "opacity-50"}`} style={{ width: "50px", height: "50px" }}></div>
         </div>
     );
 }
 
 const Login = () => {
-    const navigate = useNavigate();
-    const [pins, setPins] = useState([-1, -1, -1, -1]);
+    // const navigate = useNavigate();
+    const [pins, setPins] = useState([-1, -1, -1, -1, -1, -1]);
     const [pinLen, setPinLen] = useState(0);
     const [isConfirmBtn, setIsConfirmBtn] = useState(false);
 
     const handleClickNumber = (Num: number) => {
         const curPinlen = pinLen + 1;
-        if (curPinlen <= 4) {
+        if (curPinlen <= 6) {
             let temPins = [...pins];
             temPins[curPinlen - 1] = Num;
             setPins(temPins);
@@ -33,7 +35,7 @@ const Login = () => {
         } else { return; }
     }
     useEffect(() => {
-        if (pinLen === 4) {
+        if (pinLen === 6) {
             setIsConfirmBtn(true);
         } else {
             setIsConfirmBtn(false);
@@ -55,7 +57,7 @@ const Login = () => {
                 window.location.href = "/admin";
             } else window.location.href = "/";
             setIsConfirmBtn(false);
-            setPins([-1, -1, -1, -1]);
+            setPins([-1, -1, -1, -1, -1, -1]);
             setPinLen(0);
         }).catch(()=>{
             alert("Pin code not found."); return;
