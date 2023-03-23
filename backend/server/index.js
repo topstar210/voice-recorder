@@ -15,9 +15,10 @@ import fileRouter from "../routes/file.js";
 
 const app = express();
 const corsObj = {
-  origin: [
-    'http://localhost:3000'],
-  methods: ['GET', 'POST', "DELETE", "PUT"],
+  origin: ["http://localhost:3000", 
+  "https://dictation.backoffice365.com/",
+  "dictation2.backoffice365.com"],
+  methods: ['GET', 'POST', "DELETE", "PUT", "PATCH"],
   credentials: true
 }
 app.use(cors(corsObj));

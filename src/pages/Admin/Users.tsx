@@ -196,6 +196,7 @@ const Users = () => {
                                             value={pinCode} onChange={(e) => setPinCode(e.target.value)}
                                             className="block border border-grey-light w-full p-3 rounded mb-4"
                                             name="Pin Code"
+                                            maxLength={6}
                                             placeholder="Pin Code" />
                                         <input
                                             type="password"

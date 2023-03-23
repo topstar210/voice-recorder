@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
 
 import { RecordsContext } from "@/contexts/RecordsContext";
 import { RecordsListItem } from "./RecordsListItem";
@@ -49,7 +49,8 @@ export function RecordsList() {
 			getRemovedFiles();
 		}).catch((err:any)=>{
 			setFilePwd("");
-			toast.error(err.response.data.msg);
+			alert(err.response.data.msg);
+			// toast.error(err.response.data.msg);
 			return;
 		});
 	}
@@ -117,7 +118,7 @@ export function RecordsList() {
 					<div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
 				</>
 			) : null}
-			<ToastContainer />
+			{/* <ToastContainer /> */}
 		</div>
 	);
 }

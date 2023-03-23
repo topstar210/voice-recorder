@@ -27,7 +27,7 @@ export const saveUser = async (req, res) => {
             if (user) res.send(JSON.stringify(user));
         });
     } else {
-        const data = new User(data);
+        const data = new User(req.body);
         data.save()
             .then(user => {
                 res.send(JSON.stringify(user));
