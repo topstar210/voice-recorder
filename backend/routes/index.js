@@ -27,6 +27,7 @@ router
   .get('/users/get', Users.getUsers)
   .get('/users/get/:userId', Users.getUserInfo)
   .delete('/users/:userId', Users.deleteUser)
+  .post('/users/checkfilepwd', Users.checkFilePwd)
 
   // initail user
   .get('/add_admin', async (req, res) => {

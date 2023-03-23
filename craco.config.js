@@ -4,6 +4,9 @@ module.exports = {
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
+    resolve: {
+      fullySpecified: false
+    }
   },
   style: {
     postcss: {

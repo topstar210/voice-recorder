@@ -10,6 +10,7 @@ const Users = () => {
     const [userId, setUserId] = useState('');
     const [isEdit, setIsEdit] = useState(false);
     const [isShowRemoved, setIsShowRemoved] = useState(false);
+    const [filePwd, setFilePwd] = useState("");
 
     const [users, setUsers] = useState([]);
 
@@ -20,7 +21,8 @@ const Users = () => {
             pin_code: pinCode,
             userId,
             isShowRemoved,
-            isEdit
+            isEdit,
+            filePwd
         }).then((res: any) => {
             let userlist: any = [...users];
             if (isEdit) {
@@ -37,6 +39,7 @@ const Users = () => {
             setName("");
             setEmail("");
             setPinCode("");
+            setFilePwd("");
             setIsShowRemoved(false);
         })
     }
@@ -53,6 +56,7 @@ const Users = () => {
             setEmail(userinfo.email);
             setPinCode(userinfo.pin_code);
             setUserId(userinfo._id);
+            // setFilePwd(userinfo.filePwd);
             setIsShowRemoved(userinfo.isShowRemoved);
 
             setShowModal(true);
@@ -130,7 +134,7 @@ const Users = () => {
                                                 {v.pin_code}
                                             </td>
                                             <td className="px-6 py-3 dark:text-white text-sm text-gray-800 whitespace-nowrap">
-                                                {v.isShowRemoved?"true":"false"}
+                                                {v.isShowRemoved ? "true" : "false"}
                                             </td>
                                             <td className="px-6 py-4 dark:text-white text-sm font-medium text-right whitespace-nowrap">
                                                 <button onClick={() => editUserModal(v._id)} className="text-green-500 hover:text-green-700">
@@ -193,10 +197,16 @@ const Users = () => {
                                             className="block border border-grey-light w-full p-3 rounded mb-4"
                                             name="Pin Code"
                                             placeholder="Pin Code" />
+                                        <input
+                                            type="password"
+                                            value={filePwd} onChange={(e) => setFilePwd(e.target.value)}
+                                            className="block border border-grey-light w-full p-3 rounded mb-4"
+                                            name="file_pwd"
+                                            placeholder="New File Password" />
                                         <div>
                                             <label htmlFor="showRemoved">Showing Removed Files</label>
                                             <input type="checkbox"
-                                                checked={isShowRemoved?"checked":""}
+                                                checked={isShowRemoved ? true : false}
                                                 onChange={(e) => setIsShowRemoved(e.target.checked)}
                                                 id="showRemoved" />
                                         </div>

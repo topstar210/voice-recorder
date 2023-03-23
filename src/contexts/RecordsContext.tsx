@@ -33,6 +33,7 @@ interface RecordsContextData {
 	isPlaying: boolean;
 	currentPlaying: string;
 	isShowRemoved:boolean;
+	userId:string;
 	startRecording: () => void;
 	stopRecording: () => void;
 	pauseRecording: () => void;
@@ -77,6 +78,7 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 	const [currentPlaying, setCurrentPlaying] = useState('');
 	const [pinCode, setPinCode] = useState("");
 	const [isShowRemoved, setIsShowRemoved] = useState(false);
+	const [userId, setUserId] = useState("");
 
 	const hours = Math.floor(timer / 3600);
 	const minutes = Math.floor(timer / 60);
@@ -202,6 +204,7 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 		
 		_axios.post("/file/save",formData, config).then((res) => {
 			// console.log(res);
+			getMyfiles();
 		});
 	}
 
@@ -254,7 +257,7 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 					const fileNameStr = file.split("___");
 					const fileName = fileNameStr[1];
 					const filePath = process.env.REACT_APP_FILEURL;
-					const fullFilePath = filePath + pinCode + "/removed_files" + file;
+					const fullFilePath = filePath + pinCode + "/removed_files/" + file;
 					return {
 						id: i + 1,
 						name: fileName,
@@ -289,6 +292,7 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 	useEffect(()=>{
 		setIsShowRemoved(app?.isShowRemoved?true:false);
 		setPinCode(app.pinCode);
+		setUserId(app.userId);
 	},[app]);
 
 	useEffect(()=>{
@@ -312,6 +316,7 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 				isPlaying,
 				currentPlaying,
 				isShowRemoved,
+				userId,
 				startRecording,
 				stopRecording,
 				pauseRecording,

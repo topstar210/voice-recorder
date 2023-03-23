@@ -29,7 +29,8 @@ axiosJWT.user = {
   save: (data:any) => axiosJWT.post(`users/save`, data),
   getUsers: () => axiosJWT.get(`users/get`),
   getInfo: (userId:string) => axiosJWT.get(`users/get/${userId}`),
-  delete: (userId:string) => axiosJWT.delete(`users/${userId}`)
+  delete: (userId:string) => axiosJWT.delete(`users/${userId}`),
+  checkFilePwd: (data:any) => axiosJWT.post(`users/checkfilepwd`, data),
 }
 
 axiosJWT.file = {

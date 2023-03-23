@@ -34,14 +34,22 @@ export default {
     },
 
     get: async (req, res) => {
-        fs.readdir(process.env.FILE_SAVE_PATH + "/" + req.params.pinCode + "/" + dateString(), (error, files) => {
-            if (error) console.log("error", error)
-            let result = [];
-            if(files){
-                result = files.map((v) => dateString() + "/" + v);
-            }
-            res.send(result);
-        })
+        const dir = process.env.FILE_SAVE_PATH + "/" + req.params.pinCode + "/" + dateString();
+        fs.readdir(dir, function (err, files) {
+            files = files.map(function (fileName) {
+                return {
+                    name: fileName,
+                    time: fs.statSync(dir + '/' + fileName).mtime.getTime()
+                };
+            })
+                .sort(function (a, b) {
+                    return a.time - b.time;
+                })
+                .map(function (v) {
+                    return dateString() + "/" + v.name;
+                });
+            res.send(files);
+        });
     },
 
     // // delete files or file
@@ -75,7 +83,7 @@ export default {
     getRemovedFiles: async (req, res) => {
         fs.readdir(process.env.FILE_SAVE_PATH + "/" + req.params.pinCode + "/removed_files", (error, files) => {
             if (error) console.log(error)
-            
+
             res.send(files);
         })
     },

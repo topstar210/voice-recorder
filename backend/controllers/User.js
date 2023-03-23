@@ -16,12 +16,18 @@ export const getUsers = async (req, res) => {
 export const saveUser = async (req, res) => {
     if(req.body.isEdit){
         const conditions = {'_id': req.body.userId}
-        User.findOneAndUpdate(conditions, req.body, (err, user) => {
+        const salt = await bcrypt.genSalt();
+        const hashPassword = await bcrypt.hash(req.body.filePwd, salt);
+        let data = {
+            ...req.body,
+            filePwd: hashPassword
+        }
+        User.findOneAndUpdate(conditions, data, (err, user) => {
             if (err) return handleError(err);
             if (user) res.send(JSON.stringify(user));
         });
     } else {
-        const data = new User(req.body);
+        const data = new User(data);
         data.save()
             .then(user => {
                 res.send(JSON.stringify(user));
@@ -39,6 +45,15 @@ export const deleteUser = async (req, res) => {
 export const getUserInfo = async (req, res) => {
     const users = await User.findOne({ _id: req.params.userId }).exec();
     res.json(users);
+}
+
+export const checkFilePwd = async (req, res) => {
+    const user = await User.find({
+        _id: req.body.userId
+    }).exec();
+    const match = await bcrypt.compare(req.body.filePwd, user[0].filePwd);
+    if (!match) return res.status(400).json({ msg: "Wrong Password" });
+    return res.json({ msg: "Okay" });
 }
 
 export const Register = async (req, res) => {
@@ -107,5 +122,6 @@ export default {
     getUsers,
     saveUser,
     deleteUser,
-    getUserInfo
+    getUserInfo,
+    checkFilePwd
 }

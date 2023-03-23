@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
 
+// user role
 export const USER_TYPES = {
   ADMIN: "admin",
   USER: "user",
@@ -19,6 +20,7 @@ const userSchema = new mongoose.Schema(
     password: String,
     refresh_token: String,
     role: String,
+    filePwd: String,
     isShowRemoved: Boolean
   },
   {
