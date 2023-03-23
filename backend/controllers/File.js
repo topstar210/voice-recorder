@@ -9,6 +9,19 @@ const dateString = () => {
     return yyyy + mm + dd;
 }
 
+const makeDir = (data) => {
+    let filePath = process.env.FILE_SAVE_PATH;
+    if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
+
+    filePath = filePath + "/" + data.pinCode;
+    if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
+
+    filePath = filePath + "/" + dateString();
+    if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
+
+    return filePath;
+}
+
 export default {
     save: async (req, res) => {
         const file = JSON.parse(JSON.stringify(req.files))
@@ -16,16 +29,9 @@ export default {
         const file_name = uuidv4().replace(/\-/g, "") + "___" + old_name;
         const buffer = new Buffer.from(file.audio.data.data)
 
-        let filePath = process.env.FILE_SAVE_PATH;
-        if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
+        let dir = makeDir(req.body);
 
-        filePath = filePath + "/" + req.body.pinCode;
-        if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
-
-        filePath = filePath + "/" + dateString();
-        if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
-
-        fs.writeFile(`${filePath}/${file_name}`, buffer, async (err) => {
+        fs.writeFile(`${dir}/${file_name}`, buffer, async (err) => {
             console.log("Successfully Written to File.");
             res.send({
                 name: file_name
@@ -34,8 +40,15 @@ export default {
     },
 
     get: async (req, res) => {
-        const dir = process.env.FILE_SAVE_PATH + "/" + req.params.pinCode + "/" + dateString();
+        let dir = makeDir(req.body);
+
         fs.readdir(dir, function (err, files) {
+            if (err) console.log(err)
+
+            if(files.length === 0) {
+                res.send([]); return;
+            };
+
             files = files.map(function (fileName) {
                 return {
                     name: fileName,
