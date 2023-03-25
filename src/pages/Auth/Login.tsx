@@ -119,7 +119,7 @@ const Login = () => {
                     </div>
                     <div className="hidden lg:inline lg:px-16" style={{ maxWidth: "600px" }}>
                         <h1 className="text-9xl italic font-bold text-main dark:text-white">Login</h1>
-                        <div className="text-5xl py-10 dark:text-white font-bold">Insert some important message here</div>
+                        <div className="text-5xl py-10 dark:text-white font-bold">WMO Dictation Recording System</div>
                         <div className="flex justify-center">
                             <ConfirmPins pins={pins} />
                         </div>
