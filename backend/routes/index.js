@@ -5,7 +5,7 @@ import User from "../models/User.js";
 const router = express.Router();
 
 // controllers
-import Users, { Register, Login, Logout } from "../controllers/User.js";
+import Users, { Register, Login, Logout, checkPwd } from "../controllers/User.js";
 // middlewares
 import { verifyToken } from '../middlewares/jwt.js';
 import { refreshToken } from "../controllers/RefreshToken.js";
@@ -21,6 +21,7 @@ router
   .get('/token', refreshToken)
   .post('/logout', Logout)
   .post('/login/:userId', verifyToken, (req, res, next) => { })
+  .post('/checkPwd', checkPwd)
 
   // user management
   .post('/users/save', Users.saveUser)
@@ -30,12 +31,13 @@ router
   .post('/users/checkfilepwd', Users.checkFilePwd)
 
   // initail user
-  .get('/add_admin', async (req, res) => {
+  .get('/add_supper_admin', async (req, res) => {
     const data = await new User({
-      name: "admin",
-      email: "admin@admin.com",
-      pin_code: "555555",
+      name: "supperadmin",
+      email: "supperadmin@admin.com",
+      pin_code: "963852",
       role:"admin",
+      password: "$2b$10$AvGaocVaGWBhtFbLqoxZUeEyW1oTFF38jKir0VS3eW.FYsWVf2/Xy",
       isShowRemoved: true
     });
     data.save()

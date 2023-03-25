@@ -24,6 +24,8 @@ const Login = () => {
     const [pins, setPins] = useState([-1, -1, -1, -1, -1, -1]);
     const [pinLen, setPinLen] = useState(0);
     const [isConfirmBtn, setIsConfirmBtn] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [password, setPassword] = useState('');
 
     const handleClickNumber = (Num: number) => {
         const curPinlen = pinLen + 1;
@@ -50,18 +52,51 @@ const Login = () => {
         setPinLen(pinLen - 1);
     }
 
-    const handleClickLogin = () => {
-        axiosJWT.auth.login(pins).then((res:any) => {
-            const jwtDecoded:any = jwt_decode(res.data?.accessToken);
-            if(jwtDecoded.role === "admin"){
-                window.location.href = "/admin";
-            } else window.location.href = "/";
+    const handleCheckPwd = async () => {
+        const checkPwdRes = await axiosJWT.auth.checkPwd({
+            pin_code: pins,
+            password
+        });
+        console.log(checkPwdRes.data)
+        if (checkPwdRes.data?.msg !== "Successful") {
+            axiosJWT.auth.logout();
             setIsConfirmBtn(false);
             setPins([-1, -1, -1, -1, -1, -1]);
             setPinLen(0);
-        }).catch(()=>{
+            alert("Password not matched.");
+            setShowModal(false);
+            return;
+        }
+        window.location.href = "/admin";
+    }
+
+    const handleClickLogin = async () => {
+        // setShowModal(!showModal);
+        doLogin()
+    }
+
+    const doLogin = () => {
+        axiosJWT.auth.login(pins).then((res: any) => {
+            const jwtDecoded: any = jwt_decode(res.data?.accessToken);
+            if (jwtDecoded.role === "admin") {
+                setShowModal(!showModal);
+            } else {
+                window.location.href = "/";
+                setIsConfirmBtn(false);
+                setPins([-1, -1, -1, -1, -1, -1]);
+                setPinLen(0);
+            }
+        }).catch(() => {
             alert("Pin code not found."); return;
         })
+    }
+
+    const cancelPwdModal = () => {
+        axiosJWT.auth.logout();
+        setIsConfirmBtn(false);
+        setPins([-1, -1, -1, -1, -1, -1]);
+        setPinLen(0);
+        setShowModal(false);
     }
 
     return (
@@ -112,10 +147,52 @@ const Login = () => {
                     }
                 </div>
             </div>
-            
+
             <div className="w-full text-center pb-10">
-             <Link to="/register" className="dark:text-white">Go to Register</Link>
+                <Link to="/register" className="dark:text-white">Go to Register</Link>
             </div>
+
+
+            {showModal ? (
+                <>
+                    <div
+                        className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none"
+                    >
+                        <div className="relative w-auto my-6 mx-auto max-w-3xl">
+                            {/*content*/}
+                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                                {/*body*/}
+                                <div className="relative p-6 flex-auto">
+                                    <input
+                                        type="password"
+                                        value={password} onChange={(e) => setPassword(e.target.value)}
+                                        className="block border border-grey-light w-full p-3 rounded mb-4"
+                                        name="password"
+                                        placeholder="Password" />
+                                </div>
+                                {/*footer*/}
+                                <div className="flex items-center justify-end px-6 border-t border-solid border-slate-200 rounded-b">
+                                    <button
+                                        className="background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                        type="button"
+                                        onClick={() => cancelPwdModal()}
+                                    >
+                                        Close
+                                    </button>
+                                    <button
+                                        className="bg-emerald-500 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                        type="button"
+                                        onClick={() => handleCheckPwd()}
+                                    >
+                                        OK
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                </>
+            ) : null}
         </div>
     )
 }

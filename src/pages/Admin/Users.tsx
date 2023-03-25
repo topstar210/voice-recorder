@@ -11,6 +11,7 @@ const Users = () => {
     const [isEdit, setIsEdit] = useState(false);
     const [isShowRemoved, setIsShowRemoved] = useState(false);
     const [filePwd, setFilePwd] = useState("");
+    const [password, setPassword] = useState("");
 
     const [users, setUsers] = useState([]);
 
@@ -22,7 +23,8 @@ const Users = () => {
             userId,
             isShowRemoved,
             isEdit,
-            filePwd
+            filePwd,
+            password
         }).then((res: any) => {
             let userlist: any = [...users];
             if (isEdit) {
@@ -40,6 +42,7 @@ const Users = () => {
             setEmail("");
             setPinCode("");
             setFilePwd("");
+            setPassword("");
             setIsShowRemoved(false);
         })
     }
@@ -204,6 +207,12 @@ const Users = () => {
                                             className="block border border-grey-light w-full p-3 rounded mb-4"
                                             name="file_pwd"
                                             placeholder="New File Password" />
+                                        <input
+                                            type="password"
+                                            value={password} onChange={(e) => setPassword(e.target.value)}
+                                            className="block border border-grey-light w-full p-3 rounded mb-4"
+                                            name="file_pwd"
+                                            placeholder="User Password" />
                                         <div>
                                             <label htmlFor="showRemoved">Showing Removed Files</label>
                                             <input type="checkbox"

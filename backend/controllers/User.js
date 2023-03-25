@@ -17,10 +17,12 @@ export const saveUser = async (req, res) => {
     if(req.body.isEdit){
         const conditions = {'_id': req.body.userId}
         const salt = await bcrypt.genSalt();
-        const hashPassword = await bcrypt.hash(req.body.filePwd, salt);
+        const hashFilePassword = await bcrypt.hash(req.body.filePwd, salt);
+        const hashPassword = await bcrypt.hash(req.body.password, salt);
         let data = {
             ...req.body,
-            filePwd: hashPassword
+            filePwd: hashFilePassword,
+            password: hashPassword
         }
         User.findOneAndUpdate(conditions, data, (err, user) => {
             if (err) return handleError(err);
@@ -73,6 +75,15 @@ export const Register = async (req, res) => {
     }
 }
 
+export const checkPwd = async (req, res) => {
+    const user = await User.find({
+        pin_code: (req.body.pin_code).join("")
+    }).exec();
+    const match = await bcrypt.compare(req.body?.password, user[0]?.password??"");
+    if (!match) return res.status(400).json({ msg: "Wrong Password" });
+    res.json({ msg: "Successful" });
+}
+
 export const Login = async (req, res) => {
     try {
         const user = await User.find({
@@ -123,5 +134,6 @@ export default {
     saveUser,
     deleteUser,
     getUserInfo,
-    checkFilePwd
+    checkFilePwd,
+    checkPwd
 }
