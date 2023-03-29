@@ -56,9 +56,10 @@ const Login = () => {
         const checkPwdRes = await axiosJWT.auth.checkPwd({
             pin_code: pins,
             password
-        });
-        console.log(checkPwdRes.data)
-        if (checkPwdRes.data?.msg !== "Successful") {
+        }).then((res:any)=>{
+            window.location.href = "/admin";
+        }).catch((err:any) => {
+            console.log(err);
             axiosJWT.auth.logout();
             setIsConfirmBtn(false);
             setPins([-1, -1, -1, -1, -1, -1]);
@@ -66,8 +67,7 @@ const Login = () => {
             alert("Password not matched.");
             setShowModal(false);
             return;
-        }
-        window.location.href = "/admin";
+        });
     }
 
     const handleClickLogin = async () => {

@@ -43,6 +43,7 @@ function App() {
   }, []);
 
   const handleLogout = async () => {
+    localStorage.removeItem("fileSession");
     await API.auth.logout();
     window.location.href = "/login";
   }

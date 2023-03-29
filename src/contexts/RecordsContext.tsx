@@ -32,8 +32,10 @@ interface RecordsContextData {
 	lastId: number;
 	isPlaying: boolean;
 	currentPlaying: string;
-	isShowRemoved:boolean;
-	userId:string;
+	isShowRemoved: boolean;
+	userId: string;
+	dateVal: string;
+	setDateValue: (dateval: string) => void;
 	startRecording: () => void;
 	stopRecording: () => void;
 	pauseRecording: () => void;
@@ -41,7 +43,7 @@ interface RecordsContextData {
 	deleteRecord: (toDeleteId: number) => void;
 	deleteAllRecords: () => void;
 	getRemovedFiles: () => void;
-	getCurrFiles: () => void;
+	getCurrFiles: (dateval: string) => void;
 	cancelSaveRecord: () => void;
 	setCurrentRecordName: (name: string) => void;
 	saveRecord: () => void;
@@ -60,7 +62,7 @@ let recordingChunks: BlobPart[] = [];
 let timerTimeout: NodeJS.Timeout;
 
 export function RecordsProvider({ children }: RecordsProviderProps) {
-	const app = useSelector((state:any)=>state.sapp);
+	const app = useSelector((state: any) => state.sapp);
 	const [isRecordingAuthorized, setIsRecordingAuthorized] = useState(true);
 	const [isRecording, setIsRecording] = useState(false);
 	const [isPause, setIsPause] = useState(false);
@@ -79,6 +81,10 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 	const [pinCode, setPinCode] = useState("");
 	const [isShowRemoved, setIsShowRemoved] = useState(false);
 	const [userId, setUserId] = useState("");
+
+	let curr = new Date();
+	let datev = curr.toISOString().substring(0, 10);
+	const [dateVal, setDateVal] = useState(datev);
 
 	const hours = Math.floor(timer / 3600);
 	const minutes = Math.floor(timer / 60);
@@ -157,7 +163,7 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 
 	function deleteAllRecords() {
 		setRecords([]);
-		deleteRecordFromBN('all');
+		// deleteRecordFromBN('all');
 	}
 
 	function cancelSaveRecord() {
@@ -201,18 +207,20 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 		const formData = new FormData();
 		formData.append('audio', file);
 		formData.append('pinCode', pinCode);
-		
-		_axios.post("/file/save",formData, config).then((res) => {
+		let dateV = dateVal.split("-").join("");
+		formData.append('dateVal', dateV);
+
+		_axios.post("/file/save", formData, config).then((res) => {
 			// console.log(res);
-			getMyfiles();
+			getMyfiles(dateV);
 		});
 	}
 
 	// load records files
-	async function getMyfiles() {
-		_axios.get("/file/get/"+pinCode).then((res) => {
-			if(!res.data) return;
-			const records = res.data?.map((file:any, i:number) => {
+	async function getMyfiles(dateV: string) {
+		_axios.get(`/file/get/${pinCode}/${dateV}`).then((res) => {
+			if (!res.data) return;
+			const records = res.data?.map((file: any, i: number) => {
 				const fileNameStr = file.split("___");
 				const fileName = fileNameStr[1];
 				const filePath = process.env.REACT_APP_FILEURL;
@@ -228,13 +236,14 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 			setLastId(res.data?.length);
 		});
 	}
-	
-	function deleteRecordFromBN(toDeleteId:any) {
-		if(toDeleteId === 'all'){
-			_axios.delete("/file/delete/"+pinCode);
+
+	function deleteRecordFromBN(toDeleteId: any) {
+		if (toDeleteId === 'all') {
+			_axios.delete("/file/delete/" + pinCode);
 		} else {
 			const deleteRecord = records.filter(({ id }) => id === toDeleteId);
-			_axios.delete("/file/delete/"+pinCode+"/"+deleteRecord[0]?.uploadedName);	
+			let dateV = dateVal.split("-").join("");
+			_axios.delete("/file/delete/" + pinCode + "/" + deleteRecord[0]?.uploadedName);
 		}
 	}
 
@@ -250,10 +259,10 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 
 	function getRemovedFiles() {
 		if (!pinCode) return;
-		_axios.get("/file/get_removed/"+pinCode).then((res) => {
-			let records = []; 
-			if(res.data) {
-				records = res.data?.map((file:any, i:number) => {
+		_axios.get("/file/get_removed/" + pinCode).then((res) => {
+			let records = [];
+			if (res.data) {
+				records = res.data?.map((file: any, i: number) => {
 					const fileNameStr = file.split("___");
 					const fileName = fileNameStr[1];
 					const filePath = process.env.REACT_APP_FILEURL;
@@ -270,9 +279,14 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 		});
 	}
 
-	function getCurrFiles() {
+	function getCurrFiles(dateval: string) {
 		if (!pinCode) return;
-		getMyfiles();
+		let dateV = dateval.split("-").join("");
+		getMyfiles(dateV);
+	}
+
+	function setDateValue(dateval: string) {
+		setDateVal(dateval);
 	}
 
 	useEffect(() => {
@@ -283,22 +297,23 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 		}
 	}, [isRecording, timer]);
 
-	useEffect(()=>{
-		if(currentRecord.file){
+	useEffect(() => {
+		if (currentRecord.file) {
 			saveRecord();
 		}
-	},[currentRecord])
+	}, [currentRecord])
 
-	useEffect(()=>{
-		setIsShowRemoved(app?.isShowRemoved?true:false);
+	useEffect(() => {
+		setIsShowRemoved(app?.isShowRemoved ? true : false);
 		setPinCode(app.pinCode);
 		setUserId(app.userId);
-	},[app]);
+	}, [app]);
 
-	useEffect(()=>{
+	useEffect(() => {
 		if (!pinCode) return;
-		getMyfiles();
-	},[pinCode])
+		let dateV = dateVal.split("-").join("");
+		getMyfiles(dateV);
+	}, [pinCode])
 
 	return (
 		<RecordsContext.Provider
@@ -317,6 +332,8 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 				currentPlaying,
 				isShowRemoved,
 				userId,
+				dateVal,
+				setDateValue,
 				startRecording,
 				stopRecording,
 				pauseRecording,

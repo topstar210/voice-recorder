@@ -16,7 +16,7 @@ const getDir = (data) => {
     filePath = filePath + "/" + data.pinCode;
     if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
 
-    filePath = filePath + "/" + dateString();
+    filePath = filePath + "/" + data.dateVal;
     if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
 
     return filePath;
@@ -59,7 +59,7 @@ export default {
                     return a.time - b.time;
                 })
                 .map(function (v) {
-                    return dateString() + "/" + v.name;
+                    return req.params.dateVal + "/" + v.name;
                 });
             res.send(files);
         });
@@ -84,7 +84,7 @@ export default {
         let removedPath = process.env.FILE_SAVE_PATH + "/" + req.params.pinCode + "/removed_files";
         if (!fs.existsSync(removedPath)) fs.mkdirSync(removedPath);
 
-        const oldPath = process.env.FILE_SAVE_PATH + "/" + req.params.pinCode + "/" + dateString() + "/" + (req.params.file ? "/" + req.params.file : "");
+        const oldPath = process.env.FILE_SAVE_PATH + "/" + req.params.pinCode + "/" + req.params.dateVal + "/" + (req.params.file ? "/" + req.params.file : "");
         const newPath = removedPath + "/" + (req.params.file ? "/" + req.params.file : "");
         fs.rename(oldPath, newPath, function (err) {
             if (err) throw err

@@ -10,11 +10,12 @@ import axiosJWT from "@/provider/API";
 // import iconBlock from '@/assets/images/icons/block.svg';
 
 export function RecordsList() {
-	const { records, isShowRemoved, userId, getRemovedFiles, getCurrFiles } = useContext(RecordsContext);
+	const { records, isShowRemoved, userId, dateVal, getRemovedFiles, getCurrFiles, setDateValue } = useContext(RecordsContext);
 	const [showModal, setShowModal] = useState(false);
 	const [filePwd, setFilePwd] = useState("");
 	const [filetype, setFiletype] = useState(0);
-
+	const [isSelectDate, setIsSelectDate] = useState(false);
+	let fileSession = localStorage.getItem("fileSession");
 
 	const list = records.map(({ id, name, file }) => {
 		return <RecordsListItem
@@ -27,10 +28,11 @@ export function RecordsList() {
 
 	const changeFolder = (e: any) => {
 		setFiletype(e.target.value);
-		if (e.target.value === "1") {
+		if (e.target.value === "1" && !fileSession) {
+			setIsSelectDate(false);
 			setShowModal(true);
 		} else {
-			getCurrFiles();
+			getCurrFiles(dateVal);
 		}
 	}
 
@@ -43,11 +45,13 @@ export function RecordsList() {
 		axiosJWT.user.checkFilePwd({
 			userId,
 			filePwd
-		}).then((res:any)=>{
+		}).then((res: any) => {
 			setFilePwd("");
 			setShowModal(false);
-			getRemovedFiles();
-		}).catch((err:any)=>{
+			if(!isSelectDate) getRemovedFiles();
+			else getCurrFiles(dateVal);
+			localStorage.setItem("fileSession", "Okay");
+		}).catch((err: any) => {
 			setFilePwd("");
 			alert(err.response.data.msg);
 			// toast.error(err.response.data.msg);
@@ -55,10 +59,23 @@ export function RecordsList() {
 		});
 	}
 
+	const changeDate = (e: any) => {
+		const selectedVal = e.target.value;
+		setDateValue(selectedVal)
+		
+		if(!fileSession) {
+			setIsSelectDate(true);
+			setShowModal(true);
+		} else {
+			getCurrFiles(selectedVal);
+		}
+	}
+
 	return (
 		<div className="py-4 px-5 bg-white dark:bg-text rounded-custom shadow-lg h-full relative">
 			<h3 className="uppercase text-text dark:text-gray-50 mb-6 text-xl font-bold tracking-wider font-serif">Recordings</h3>
-			<select value={filetype} onChange={(e) => changeFolder(e)} className="absolute right-5 top-4">
+			<input type="date" defaultValue={dateVal} onChange={(e) => changeDate(e)} className="absolute right-40 top-4" />
+			<select value={filetype} onChange={(e) => changeFolder(e)} className="absolute right-5 top-4" style={{ height: '27px' }}>
 				<option value={0}>Current Files</option>
 				{isShowRemoved && <option value={1}>Removed Files</option>}
 			</select>
