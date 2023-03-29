@@ -9,7 +9,7 @@ const dateString = () => {
     return yyyy + mm + dd;
 }
 
-const makeDir = (data) => {
+const getDir = (data) => {
     let filePath = process.env.FILE_SAVE_PATH;
     if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
 
@@ -29,7 +29,7 @@ export default {
         const file_name = uuidv4().replace(/\-/g, "") + "___" + old_name;
         const buffer = new Buffer.from(file.audio.data.data)
 
-        let dir = makeDir(req.body);
+        let dir = getDir(req.body);
 
         fs.writeFile(`${dir}/${file_name}`, buffer, async (err) => {
             console.log("Successfully Written to File.");
@@ -40,7 +40,7 @@ export default {
     },
 
     get: async (req, res) => {
-        let dir = makeDir(req.body);
+        let dir = getDir(req.params);
 
         fs.readdir(dir, function (err, files) {
             if (err) console.log(err)

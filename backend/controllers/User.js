@@ -53,7 +53,7 @@ export const checkFilePwd = async (req, res) => {
     const user = await User.find({
         _id: req.body.userId
     }).exec();
-    const match = await bcrypt.compare(req.body.filePwd, user[0].filePwd);
+    const match = await bcrypt.compare(req.body.filePwd??"", user[0]?.filePwd??"");
     if (!match) return res.status(400).json({ msg: "Wrong Password" });
     return res.json({ msg: "Okay" });
 }
