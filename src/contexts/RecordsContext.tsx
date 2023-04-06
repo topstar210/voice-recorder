@@ -131,14 +131,16 @@ export function RecordsProvider({ children }: RecordsProviderProps) {
 	}
 
 	function stopRecording() {
-		recorder.onstop = () => {
+		recorder.onstop = async () => {
 			const recordBlob = new Blob(recordingChunks, {
 				type: 'audio/ogg; codecs=opus'
 			});
+			let delRecords:any = await _axios.get("/file/get_removed/" + pinCode);
+			delRecords = delRecords.data;
 
 			setCurrentRecord({
 				...currentRecord,
-				name: (Math.random() + 1).toString(36).substring(7) + ".mp3",
+				name: `${pinCode}-${dateVal.split("-").join("")}-${delRecords.length + records.length + 1}` + ".mp3",
 				file: window.URL.createObjectURL(recordBlob)
 			});
 

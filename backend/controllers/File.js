@@ -85,7 +85,7 @@ export default {
         if (!fs.existsSync(removedPath)) fs.mkdirSync(removedPath);
 
         const oldPath = process.env.FILE_SAVE_PATH + "/" + req.params.pinCode + "/" + req.params.dateVal + "/" + (req.params.file ? "/" + req.params.file : "");
-        const newPath = removedPath + "/" + (req.params.file ? "/" + req.params.file : "");
+        const newPath = removedPath + "/" + (req.params.file ? "/" + "d-"+req.params.file : "");
         fs.rename(oldPath, newPath, function (err) {
             if (err) throw err
             console.log('Successfully renamed - AKA moved!')

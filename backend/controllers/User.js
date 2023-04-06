@@ -14,11 +14,11 @@ export const getUsers = async (req, res) => {
 }
 
 export const saveUser = async (req, res) => {
+    const salt = await bcrypt.genSalt();
+    const hashFilePassword = await bcrypt.hash(req.body.filePwd??"", salt);
+    const hashPassword = await bcrypt.hash(req.body.password??"", salt);
     if(req.body.isEdit){
         const conditions = {'_id': req.body.userId}
-        const salt = await bcrypt.genSalt();
-        const hashFilePassword = await bcrypt.hash(req.body.filePwd, salt);
-        const hashPassword = await bcrypt.hash(req.body.password, salt);
         let data = {
             ...req.body,
             filePwd: hashFilePassword,

@@ -28,11 +28,15 @@ export function RecordsList() {
 
 	const changeFolder = (e: any) => {
 		setFiletype(e.target.value);
-		if (e.target.value === "1" && !fileSession) {
-			setIsSelectDate(false);
+		setIsSelectDate(false);
+		if (!fileSession) {
 			setShowModal(true);
 		} else {
-			getCurrFiles(dateVal);
+			if(e.target.value === "1") {
+				getRemovedFiles();
+			} else {
+				getCurrFiles(dateVal);
+			}
 		}
 	}
 
@@ -48,6 +52,7 @@ export function RecordsList() {
 		}).then((res: any) => {
 			setFilePwd("");
 			setShowModal(false);
+			console.log(isSelectDate)
 			if(!isSelectDate) getRemovedFiles();
 			else getCurrFiles(dateVal);
 			localStorage.setItem("fileSession", "Okay");
@@ -62,6 +67,7 @@ export function RecordsList() {
 	const changeDate = (e: any) => {
 		const selectedVal = e.target.value;
 		setDateValue(selectedVal)
+		setFiletype(0)
 		
 		if(!fileSession) {
 			setIsSelectDate(true);
